@@ -35,19 +35,24 @@ def create_app(test_config=None):
   '''
   @app.route('/categories')
   def get_categories():
-        categories = Category.query.all()
-        category_types = []
-        for category in categories:
-            category_types.append(category.type)
+        try:
+            categories = Category.query.all()
+            category_types_arr = []
+            for category in categories:
+                  category_types_arr.append(category.type)
+            
+            
+            if ((len(category_types_arr))):
+                  print("no category type in database")
+                  
 
-        if (len(category_types) == 0):
-            abort(404)
-
-        return jsonify({
-            'success': True,
-            'categories': category_types
-        })
-
+            return jsonify({
+                'success' : True,
+                'categories' : category_types_arr
+            })
+        except Exception:
+            abort(500)
+       
   '''
   @TODO: 
   Create an endpoint to handle GET requests for questions, 
