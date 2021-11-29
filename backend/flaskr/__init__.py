@@ -3,58 +3,70 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
-
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+
+def paginate_questions(request, questions):
+    # starting from zero so page -1
+    page = request.args.get('page', 1, type=int) - 1
+
+    start = page * QUESTIONS_PER_PAGE
+    end = start + QUESTIONS_PER_PAGE
+
+    # create list of all questions as question formate id , question , answer etc
+    questions = [question.format() for question in questions]
+
+    current_questions = questions[start:end]
+
+    return current_questions
+
+
 def create_app(test_config=None):
-  # create and configure the app
-  app = Flask(__name__)
-  setup_db(app)
-  
-  '''
+    # create and configure the app
+    app = Flask(__name__)
+    setup_db(app)
+
+    '''
   Set up CORS. Allow '*' for origins.
   '''
-  CORS(app, resources={'/': {'origins': '*'}})
+    CORS(app, resources={'/': {'origins': '*'}})
 
-  '''
+    '''
   Use the after_request decorator to set Access-Control-Allow
   '''
-  @app.after_request
-  def after_request(response):
+    @app.after_request
+    def after_request(response):
         response.headers.add('Access-Control-Allow-Headers',
                              'Content-Type,Authorization,true')
         response.headers.add('Access-Control-Allow-Methods',
                              'GET,PUT,POST,DELETE,OPTIONS')
         return response
-        
-  '''
+
+    '''
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-  @app.route('/categories')
-  def get_categories():
+    @app.route('/categories')
+    def get_categories():
         try:
             categories = Category.query.all()
             category_types_arr = []
             for category in categories:
-                  category_types_arr.append(category.type)
-            
-            
+                category_types_arr.append(category.type)
+
             if ((len(category_types_arr))):
-                  print("no category type in database")
-                  
+                print("no category type in database")
 
             return jsonify({
-                'success' : True,
-                'categories' : category_types_arr
+                'success': True,
+                'categories': category_types_arr
             })
         except Exception:
             abort(500)
-       
-  '''
-  @TODO: 
+
+    '''
   Create an endpoint to handle GET requests for questions, 
   including pagination (every 10 questions). 
   This endpoint should return a list of questions, 
@@ -66,7 +78,35 @@ def create_app(test_config=None):
   Clicking on the page numbers should update the questions. 
   '''
 
-  '''
+    @app.route('/questions')
+    def get_questions():
+        #  query all questions
+        questions = Question.query.all()
+        print(questions)
+
+        # find out how many question there are
+        total_questions = len(questions)
+
+        current_questions = paginate_questions(request, questions)
+        print("CURRENT Qs", current_questions)
+
+        categories = Category.query.all()
+        category_types = []
+        for category in categories:
+            category_types.append(category.type)
+
+        if (len(current_questions) == 0):
+            abort(404)
+
+        return jsonify({
+            'success': True,
+            'questions': current_questions,
+            'total_questions': total_questions,
+            'categories': category_types,
+            'current_category': 'will be setup later'
+        })
+
+    '''
   @TODO: 
   Create an endpoint to DELETE question using a question ID. 
 
@@ -74,7 +114,7 @@ def create_app(test_config=None):
   This removal will persist in the database and when you refresh the page. 
   '''
 
-  '''
+    '''
   @TODO: 
   Create an endpoint to POST a new question, 
   which will require the question and answer text, 
@@ -85,7 +125,7 @@ def create_app(test_config=None):
   of the questions list in the "List" tab.  
   '''
 
-  '''
+    '''
   @TODO: 
   Create a POST endpoint to get questions based on a search term. 
   It should return any questions for whom the search term 
@@ -96,7 +136,7 @@ def create_app(test_config=None):
   Try using the word "title" to start. 
   '''
 
-  '''
+    '''
   @TODO: 
   Create a GET endpoint to get questions based on category. 
 
@@ -105,8 +145,7 @@ def create_app(test_config=None):
   category to be shown. 
   '''
 
-
-  '''
+    '''
   @TODO: 
   Create a POST endpoint to get questions to play the quiz. 
   This endpoint should take category and previous question parameters 
@@ -118,12 +157,10 @@ def create_app(test_config=None):
   and shown whether they were correct or not. 
   '''
 
-  '''
+    '''
   @TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
-  
-  return app
 
-    
+    return app
