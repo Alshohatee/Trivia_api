@@ -167,13 +167,13 @@ def create_app(test_config=None):
             abort(404)
 
     '''
-  Create a POST endpoint to get questions based on a search term. 
-  It should return any questions for whom the search term 
-  is a substring of the question. 
+  Create a POST endpoint to get questions based on a search term.
+  It should return any questions for whom the search term
+  is a substring of the question.
 
-  TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
-  Try using the word "title" to start. 
+  TEST: Search by any phrase. The questions list will update to include
+  only question that include that string within their question.
+  Try using the word "title" to start.
   '''
     @app.route('/questions/search', methods=['POST'])
     def search_questions():
@@ -200,14 +200,30 @@ def create_app(test_config=None):
         else:
             abort(404)
     '''
-  @TODO: 
-  Create a GET endpoint to get questions based on category. 
+  Create a GET endpoint to get questions based on category.
 
-  TEST: In the "List" tab / main screen, clicking on one of the 
-  categories in the left column will cause only questions of that 
-  category to be shown. 
+  TEST: In the "List" tab / main screen, clicking on one of the
+  categories in the left column will cause only questions of that
+  category to be shown.
   '''
+    @app.route('/categories/<int:category_id>/questions')
+    def get_questions_by_category(category_id):
 
+        # # get the category by id
+        questions = Question.query.filter(
+            Question.category == str(category_id)).all()
+
+        # make list of all the questions form that category
+        all_questions_by_category = [question.format()
+                                     for question in questions],
+        if questions:
+            return jsonify({
+                'success': True,
+                'questions': all_questions_by_category,
+                'total_questions': len(questions),
+                'current_category': category_id
+            })
+        abort(404)
     '''
   @TODO: 
   Create a POST endpoint to get questions to play the quiz. 
