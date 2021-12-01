@@ -167,7 +167,6 @@ def create_app(test_config=None):
             abort(404)
 
     '''
-  @TODO: kil
   Create a POST endpoint to get questions based on a search term. 
   It should return any questions for whom the search term 
   is a substring of the question. 
@@ -176,7 +175,30 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
+    @app.route('/questions/search', methods=['POST'])
+    def search_questions():
+        # get the form info form the from
+        body = request.get_json()
 
+        # get the search term
+        search_term = body.get('searchTerm')
+
+        if search_term:
+            search_results = Question.query.filter(
+                Question.question.ilike(f'%{search_term}%')).all()
+
+            # get all the questions
+            questions = paginate_questions(request, search_results)
+            print(search_term)
+            return jsonify({
+                'success': True,
+                'questions': questions,
+                'total_questions': len(search_results),
+                'current_category': "None"
+            })
+
+        else:
+            abort(404)
     '''
   @TODO: 
   Create a GET endpoint to get questions based on category. 
