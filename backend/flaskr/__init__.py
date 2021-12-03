@@ -287,4 +287,12 @@ def create_app(test_config=None):
             "message": "The resource is not found."
         }), 404
 
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error": 422,
+            "message": "Unprocessable"
+        }), 422
+
     return app
