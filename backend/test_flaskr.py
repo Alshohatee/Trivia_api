@@ -100,6 +100,19 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], True)
         self.assertEqual(total_questions_after, total_questions_before + 1)
 
+    def test_422_post_question(self):
+        new_question = {
+            'question': self.sample_question['question'],
+            'answer': self.sample_question['answer'],
+            'difficulty': self.sample_question['difficulty'],
+        }
+        res = self.client().post('/questions', json=new_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "Unprocessable")
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
