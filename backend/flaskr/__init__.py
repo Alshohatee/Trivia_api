@@ -121,7 +121,8 @@ def create_app(test_config=None):
 
             # question has something in it and it is not none - return success message
             return jsonify({
-                'success': True
+                'success': True,
+                'question_deleted': question_id
             })
         # if the question is none - not found in the database
         # was deleted

@@ -65,6 +65,25 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertIsInstance(data['categories'], list)
 
+    def test_delete_question(self):
+        question = Question(question=self.sample_question['question'], answer=self.sample_question['answer'],
+                            difficulty=1, category=1)
+
+        question.insert()
+        question_id = question.id
+
+        res = self.client().delete(f'/questions/{question_id}')
+        data = json.loads(res.data)
+
+        question = Question.query.filter(
+            Question.id == question.id).one_or_none()
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['question_deleted'], question_id)
+
+        self.assertEqual(question, None)
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
