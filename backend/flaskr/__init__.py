@@ -144,11 +144,14 @@ def create_app(test_config=None):
         # get the form info form the from
         body = request.get_json()
 
+        if not ('question' in body and 'answer' in body and 'difficulty' in body and 'category' in body):
+            abort(422)
+
         if body:
-            new_question = body.get('question', None)
-            new_answer = body.get('answer', None)
-            new_difficulty = body.get('difficulty', None)
-            new_category = body.get('category', None)
+            new_question = body.get('question')
+            new_answer = body.get('answer')
+            new_difficulty = body.get('difficulty')
+            new_category = body.get('category'ß)
 
         try:
             question = Question(question=new_question, answer=new_answer,
@@ -165,7 +168,7 @@ def create_app(test_config=None):
             })
 
         except:
-            abort(404)
+            abort(422)
 
     '''
   Create a POST endpoint to get questions based on a search term.
