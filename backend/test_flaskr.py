@@ -52,6 +52,19 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertIsInstance(data['categories'], list)
 
+    def test_get_questions(self):
+        res = self.client().get('/questions?page=1')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertIsInstance(data['questions'], list)
+
+        self.assertLessEqual(len(data['questions']), 10)
+        self.assertIsInstance(data['total_questions'], int)
+
+        self.assertIsInstance(data['categories'], list)
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
