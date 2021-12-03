@@ -135,13 +135,36 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "The resource is not found.")
 
-    def test_404_get_questions_per_category(self):
-        res = self.client().get('/categories/a/questions')
+    def test_get_questions_by_category(self):
+        category_id = 3
+        res = self.client().get(f'/categories/{category_id}/questions')
+        # res = self.client().get('/categories/4/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['questions']))
+        self.assertTrue(data['total_questions'])
+        self.assertTrue(data['current_category'])
+
+    def test_404_get_questions_by_category(self):
+        category_id = 10
+        res = self.client().get(f'/categories/{category_id}/questions')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"],  "The resource is not found.")
+
+    def test_play_quiz(self):
+        new_quiz_round = {'previous_questions': [],
+                          'quiz_category': {'type': 'Entertainment', 'id': 5}}
+
+        res = self.client().post('/quizzes', json=new_quiz_round)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
 
 
 # Make the tests conveniently executable

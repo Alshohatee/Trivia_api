@@ -211,7 +211,7 @@ def create_app(test_config=None):
   category to be shown.
   '''
 
-    @app.route('/categories/<int:category_id>/questions')
+    @app.route('/categories/<int:category_id>/questions', methods=['get'])
     def get_questions_by_category(category_id):
 
         # # get the category by id
@@ -222,12 +222,14 @@ def create_app(test_config=None):
         all_questions_by_category = [question.format()
                                      for question in questions]
         if questions:
+            print("yes")
             return jsonify({
                 'success': True,
                 'questions': all_questions_by_category,
                 'total_questions': len(questions),
                 'current_category': category_id
             })
+
         abort(404)
 
     '''
